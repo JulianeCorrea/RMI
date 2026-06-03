@@ -1,79 +1,119 @@
-INSTRUÇÕES PARA COMPILAR E EXECUTAR A APLICAÇÃO RMI DE CONTA BANCÁRIA
-=====================================================================
+====================================================================
+APLICAÇÃO RMI - CONTA BANCÁRIA
+====================================================================
+
+DESCRIÇÃO:
+----------
+Aplicação distribuída utilizando Java RMI (Remote Method Invocation)
+que implementa uma conta bancária compartilhada entre múltiplos clientes.
+O objeto remoto permite operações de depósito, saque e consulta de saldo
+de forma concorrente e segura.
+
+FUNCIONALIDADES:
+---------------
+- Depositar valores na conta
+- Sacar valores (com validação de saldo)
+- Consultar saldo atual
+- Acesso simultâneo de múltiplos clientes
+- Sincronização de dados para evitar condições de corrida
+
+ESTRUTURA DOS ARQUIVOS:
+-----------------------
+BankAccount.java      - Interface remota
+BankAccountImpl.java  - Implementação do objeto remoto
+BankServer.java       - Servidor RMI
+BankClient.java       - Cliente RMI
+readme.txt           - Este arquivo
 
 PRÉ-REQUISITOS:
-- JDK (Java Development Kit) instalado (versão 8 ou superior)
-- Terminal/Console para executar os comandos
+--------------
+- JDK (Java Development Kit) versão 8 ou superior instalado
+- Conexão de rede local (para testes, pode ser localhost)
 
-ARQUIVOS DA APLICAÇÃO:
-- BankAccount.java (interface remota)
-- BankAccountImpl.java (implementação)
-- BankServer.java (servidor)
-- BankClient.java (cliente)
-
-PASSO 1: COMPILAÇÃO
--------------------
-Compile todos os arquivos .java com o seguinte comando:
+COMPILAÇÃO:
+-----------
+Para compilar todos os arquivos, execute no terminal:
 
 javac *.java
 
-Este comando gerará os arquivos .class correspondentes.
-
-PASSO 2: INICIAR O SERVIDOR RMI
--------------------------------
-Em um terminal, execute o servidor:
+EXECUÇÃO:
+---------
+1. Inicie o servidor (em um terminal):
 
 java BankServer
 
-O servidor irá:
-- Criar o objeto remoto da conta bancária (saldo inicial: R$ 1000)
-- Iniciar o registro RMI na porta 1099
-- Registrar o objeto com o nome "BankAccount"
+   O servidor irá:
+   - Criar uma conta com saldo inicial de R$ 1.000,00
+   - Iniciar o registro RMI na porta 1099
+   - Aguardar conexões dos clientes
 
-PASSO 3: EXECUTAR OS CLIENTES
------------------------------
-Em outro(s) terminal(ais), execute os clientes:
+2. Inicie o(s) cliente(s) (em outro(s) terminal(es)):
 
 java BankClient
 
-Você pode executar quantos clientes quiser simultaneamente
-para demonstrar o acesso concorrente à conta.
-
-PASSO 4: TESTANDO A APLICAÇÃO
------------------------------
-Em cada cliente, você poderá:
-- Depositar valores na conta
-- Sacar valores (com verificação de saldo)
-- Consultar o saldo atual
-
-O servidor mostrará logs de todas as operações realizadas.
-
-EXEMPLO DE USO:
----------------
-Cliente 1: Depositar R$ 500
-Cliente 2: Sacar R$ 200
-Cliente 3: Consultar saldo (deve mostrar R$ 1300, se saldo inicial era R$ 1000)
-
-CARACTERÍSTICAS DA IMPLEMENTAÇÃO:
+OPERAÇÕES DISPONÍVEIS NO CLIENTE:
 ---------------------------------
-- Métodos sincronizados (synchronized) garantem acesso concorrente seguro
-- Validação de valores positivos para depósitos e saques
-- Verificação de saldo suficiente para saques
-- Logs no servidor para acompanhamento das operações
+Opção 1 - Depositar:   Adiciona um valor positivo à conta
+Opção 2 - Sacar:       Remove um valor da conta (se houver saldo)
+Opção 3 - Consultar:   Exibe o saldo atual
+Opção 0 - Sair:        Encerra o cliente
 
-PARA ENCERRAR A APLICAÇÃO:
+TESTANDO A APLICAÇÃO:
+---------------------
+Exemplo de uso com um cliente:
+
+1. Consultar saldo    → R$ 1.000,00
+2. Depositar R$ 500   → Saldo: R$ 1.500,00
+3. Sacar R$ 200       → Saldo: R$ 1.300,00
+4. Consultar saldo    → R$ 1.300,00
+
+Teste com múltiplos clientes:
+
+- Cliente 1 deposita R$ 100
+- Cliente 2 consulta saldo (vê o novo saldo)
+- Cliente 2 saca R$ 50
+- Cliente 1 consulta saldo (vê o saldo atualizado)
+
+CARACTERÍSTICAS TÉCNICAS:
 -------------------------
-1. Feche todos os clientes (opção 0 ou Ctrl+C)
-2. Encerre o servidor com Ctrl+C
+- Interface remota estende java.rmi.Remote
+- Implementação estende UnicastRemoteObject
+- Métodos sincronizados (synchronized) para concorrência
+- Registro RMI na porta padrão 1099
+- Validação de valores positivos e saldo suficiente
 
-POSSÍVEIS PROBLEMAS E SOLUÇÕES:
--------------------------------
-- Erro "Connection refused": Certifique-se que o servidor está rodando
-- Erro "ClassNotFoundException": Verifique se todos os arquivos .class existem
-- Porta 1099 em uso: Altere a porta no código do servidor e cliente
+ENCERRANDO A APLICAÇÃO:
+-----------------------
+1. Nos clientes: digite 0 ou pressione Ctrl+C
+2. No servidor: pressione Ctrl+C
 
 OBSERVAÇÕES:
------------
-- Todos os clientes compartilham a mesma conta bancária
-- As operações são atômicas devido ao uso de 'synchronized'
-- O servidor deve estar rodando antes de qualquer cliente
+------------
+- O servidor deve ser iniciado ANTES de qualquer cliente
+- Todos os clientes compartilham a MESMA conta bancária
+- As operações são atômicas e thread-safe devido ao synchronized
+- Para executar em rede, substitua "localhost" pelo IP do servidor
+
+EXEMPLO DE SAÍDA DO SERVIDOR:
+-----------------------------
+Servidor RMI da conta bancária está rodando...
+Objeto registrado como 'BankAccount'
+Pressione Ctrl+C para encerrar o servidor
+Depósito de R$ 500.0 realizado. Saldo atual: R$ 1500.0
+Saque de R$ 200.0 realizado. Saldo atual: R$ 1300.0
+Consulta de saldo: R$ 1300.0
+
+EXEMPLO DE SAÍDA DO CLIENTE:
+----------------------------
+Cliente conectado à conta bancária RMI
+=====================================
+
+Operações disponíveis:
+1 - Depositar
+2 - Sacar
+3 - Consultar Saldo
+0 - Sair
+Escolha uma opção: 3
+Saldo atual: R$ 1000.0
+
+====================================================================
